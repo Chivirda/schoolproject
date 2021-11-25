@@ -84,6 +84,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator
         if ($this->isApiLoginRequest($request)) {
             return new JsonResponse([
                     'success' => true,
+                    'data' => md5('password')
                 ]
             );
         }
