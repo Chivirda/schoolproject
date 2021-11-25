@@ -1,0 +1,3 @@
+#!/bin/bash
+. .env
+docker exec -ti -u `id -u` vi_school_lesson4_symfony_php /code/bin/console "$@"

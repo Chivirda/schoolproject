@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Главная{% endblock %} | Портал поддержки</title>
+    {% block stylesheets %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+              crossorigin="anonymous">
+    {% endblock %}
+</head>
+<body>
+<div class="container">
+    <div class="container">
+        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+                <img src="data:image/png;base64,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"/>
+            </a>
+
+            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="{{ path('request.list') }}" class="nav-link px-2 link-secondary">Список заявок</a></li>
+            </ul>
+
+            <div class="col-md-3 text-end">
+                {% if app.user %}
+                    <a href="{{ path('request.add') }}" class="btn btn-success me-2">Добавить заявку</a>
+                    <a href="{{ path('app.logout') }}" class="btn btn-outline-primary">Выход</a>
+                {% else %}
+                    <a href="{{ path('app.login') }}" class="btn btn-outline-primary me-2">Вход</a>
+                    <a href="{{ path('app.registration') }}" class="btn btn-primary">Регистрация</a>
+                {% endif %}
+            </div>
+        </header>
+    </div>
+    {% block body %}
+        <h1>Добро пожаловать!</h1>
+        <p>
+            Вы находитесь на учебном проекте с помощью которого вы можете создать заявку в тех. поддержку.
+        </p>
+    {% endblock %}
+</div>
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Список запросов{% endblock %}
+
+{% block body %}
+    <h1>Список запросов:</h1>
+    <div>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th class="text-center" style="width: 80px">Номер</th>
+                <th>Заголовок</th>
+                <th class="text-center" style="width: 100px">Статус</th>
+                <th class="text-center" style="width: 180px">Дата создания</th>
+                <th style="width: 60px"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for request in requestList %}
+                <tr>
+                    <td class="text-center">{{ request.id }}</td>
+                    <td>{{ request.title }}</td>
+                    <td class="text-center">
+                        {% set badgeClass = 'bg-primary' %}
+                        {% if request.status == 1 %}
+                            {% set badgeClass = 'bg-success' %}
+                        {% elseif request.status == 2 %}
+                            {% set badgeClass = 'bg-danger' %}
+                        {% endif %}
+
+                        <div class="badge {{ badgeClass }}">
+                            {{ constant('App\\Entity\\SupportRequest::STATUS_TITLE_LIST')[request.status] }}
+                        </div>
+                    </td>
+                    <td class="text-center">{{ request.createAt.format('Y.m.d H:i:s') }}</td>
+                    <td class="text-center">
+                        <a class="btn btn-primary btn-sm" href="{{ path('request.show', {'id': request.id }) }}">
+                            Посмотреть
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}

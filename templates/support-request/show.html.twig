@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ request.title }}{% endblock %}
+
+{% block body %}
+    <a class="btn btn-outline-primary btn-sm mb-2 ps-5 pe-5" href="{{ path('request.list') }}">К списку</a>
+    <hr/>
+    <div class="text-end">
+        {% if app.user %}
+            {% if not request.answered %}
+                <a href="{{ path('request.edit', {'id': request.id}) }}"
+                   class="btn btn-primary btn-sm">Редактировать</a>
+            {% endif %}
+            {% if request.createdBy.id == app.user.id %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div>
+        <table class="table">
+            <thead>
+            <tbody>
+            <tr>
+                <td>Заголовок</td>
+                <td>{{ request.title }}</td>
+            </tr>
+            <tr>
+                <td>Сообщение</td>
+                <td>{{ request.message }}</td>
+            </tr>
+            <tr>
+                <td>Статус</td>
+                <td>
+                    {% set badgeClass = 'bg-primary' %}
+                    {% if request.status == 1 %}
+                        {% set badgeClass = 'bg-success' %}
+                    {% elseif request.status == 2 %}
+                        {% set badgeClass = 'bg-danger' %}
+                    {% endif %}
+
+                    <div class="badge {{ badgeClass }}">
+                        {{ constant('App\\Entity\\SupportRequest::STATUS_TITLE_LIST')[request.status] }}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Дата создания</td>
+                <td>{{ request.createAt.format('Y.m.d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <td>Кем создано</td>
+                <td>{{ request.createdBy.fullName }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    {% if app.user and not request.answered %}
+        <div class="container bg-light p-3">
+            <h2>Ответить на заявку</h2>
+            <div>
+                {{ form(answeredForm) }}
+            </div>
+        </div>
+    {% endif %}
+    {% if request.answered %}
+        <div class="container bg-light p-3">
+            <h2>Ответ на заявку</h2>
+            <table class="table">
+                <tr>
+                    <td>Кем решено</td>
+                    <td>{{ request.answer.answeredBy.fullName }}</td>
+                </tr>
+                <tr>
+                    <td>Ответ</td>
+                    <td>{{ request.answer.answer }}</td>
+                </tr>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
