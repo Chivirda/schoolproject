@@ -16,7 +16,10 @@ class LoginController
     {
 
         return new JsonResponse([
-            'success' => true
+            'success' => true,
+            'data'    => [
+                md5('password'),
+            ],
         ]);
     }
 }
