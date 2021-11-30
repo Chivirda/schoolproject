@@ -6,10 +6,12 @@ use App\DTO\SupportRequestAnswerDTO;
 use App\DTO\SupportRequestDTO;
 use App\Entity\SupportRequest as RequestEntity;
 use App\Entity\SupportRequestAnswer;
+use App\Entity\User;
 use App\FilterOptionCollection\GetSupportRequestListFilterOptionCollection;
 use App\Form\Type\SupportRequestAnswerType;
 use App\Form\Type\SupportRequestType;
 use App\Repository\SupportRequestRepository;
+use App\Repository\UserRepository;
 use App\Service\SupportRequestApiDataManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,10 +25,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class SupportRequestController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
+    private UserRepository $userRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, UserRepository $userRepository)
     {
         $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -75,6 +79,15 @@ class SupportRequestController extends AbstractController
         int $id,
         SupportRequestRepository $supportRequestRepository
     ): Response {
+        $user = $this->getUserByBearerToken($request);
+
+        if (is_null($user)) {
+            return $this->json([
+                'error'   => true,
+                'message' => 'Пользователь не авторизован',
+            ]);
+        }
+
         $supportRequest = $supportRequestRepository->findById($id);
 
         if (is_null($supportRequest)) {
@@ -103,13 +116,21 @@ class SupportRequestController extends AbstractController
         Request $request,
         SupportRequestApiDataManager $supportRequestApiDataManager
     ): Response {
-        $requestDto = new SupportRequestDTO($this->getUser());
+        $user = $this->getUserByBearerToken($request);
+
+        if (is_null($user)) {
+            return $this->json([
+                'error'   => true,
+                'message' => 'Пользователь не авторизован',
+            ]);
+        }
+        $data = json_decode($request->getContent(), true);
+
+        $requestDto = new SupportRequestDTO($user);
 
         $form = $this->createForm(SupportRequestType::class, $requestDto, [
             'csrf_protection' => false,
         ]);
-
-        $data = json_decode($request->getContent(), true);
 
         $form->submit($data);
 
@@ -141,13 +162,22 @@ class SupportRequestController extends AbstractController
     }
 
     /**
-     * @Route("/answer/{id}", name="request.answer")
+     * @Route("/answer/{id}", name="api.request.answer")
      */
     public function answerAction(
         Request $request,
         int $id,
         SupportRequestRepository $supportRequestRepository
     ): Response {
+        $user = $this->getUserByBearerToken($request);
+
+        if (is_null($user)) {
+            return $this->json([
+                'error'   => true,
+                'message' => 'Пользователь не авторизован',
+            ]);
+        }
+
         $supportRequest = $supportRequestRepository->findById($id);
 
         if (is_null($supportRequest)) {
@@ -164,13 +194,12 @@ class SupportRequestController extends AbstractController
             ]);
         }
 
-        $answerDto = new SupportRequestAnswerDTO($supportRequest, $this->getUser());
+        $data = json_decode($request->getContent(), true);
+        $answerDto = new SupportRequestAnswerDTO($supportRequest, $user);
 
         $form = $this->createForm(SupportRequestAnswerType::class, $answerDto, [
             'csrf_protection' => false,
         ]);
-
-        $data = json_decode($request->getContent(), true);
 
         $form->handleRequest($data);
 
@@ -219,5 +248,17 @@ class SupportRequestController extends AbstractController
             'success' => true,
             'data'    => $supportRequest->getAnswer() ? $supportRequest->getAnswer()->getData() : null
         ]);
+    }
+
+    private function getUserByBearerToken(Request $request): ?User
+    {
+        if ($request->headers->has('Authorization')
+            && 0 === strpos($request->headers->get('Authorization'), 'Bearer ')) {
+            $token = substr($request->headers->get('Authorization'), 7);
+
+            return $this->userRepository->getUserByApiKey($token);
+        }
+
+        return null;
     }
 }

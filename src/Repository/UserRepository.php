@@ -27,6 +27,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $this->findOneBy(['email' => $email]);
     }
 
+    public function getUserByApiKey(string $apiKey): ?User
+    {
+        return $this->findOneBy(['apiKey' => $apiKey]);
+    }
+
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */

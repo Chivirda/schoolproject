@@ -82,9 +82,12 @@ class LoginFormAuthenticator extends AbstractAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         if ($this->isApiLoginRequest($request)) {
+            /** @var User $user */
+            $user = $token->getUser();
+
             return new JsonResponse([
                     'success' => true,
-                    'data' => md5('password')
+                    'data' =>$user->getApiKey()
                 ]
             );
         }

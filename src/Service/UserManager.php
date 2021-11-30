@@ -35,6 +35,7 @@ class UserManager
             $userDto->getPlainPassword()
         );
 
+        $user->setApiKey(hash('sha256', $hashedPassword));
         $user->setPassword($hashedPassword);
 
         $this->entityManager->persist($user);

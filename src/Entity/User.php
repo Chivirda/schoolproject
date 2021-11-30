@@ -30,6 +30,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $fullName;
 
     /**
+     * @ORM\Column(type="string", length=180)
+     */
+    private $apiKey;
+
+    /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
@@ -137,6 +142,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFullName($fullName): void
     {
         $this->fullName = $fullName;
+    }
+
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    public function setApiKey($apiKey): void
+    {
+        $this->apiKey = $apiKey;
     }
 
     public function getData(): array
