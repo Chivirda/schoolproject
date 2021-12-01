@@ -97,12 +97,15 @@ class SupportRequestController extends AbstractController
             ]);
         }
 
-        if ($supportRequest->getCreatedBy()->getId() !== $this->getUser()->getId()) {
+        if ($supportRequest->getCreatedBy()->getId() !== $user->getId()) {
             return $this->json([
                 'error'   => true,
                 'message' => 'Удалить заявку может только создатель',
             ]);
         }
+
+        $this->entityManager->remove($supportRequest);
+        $this->entityManager->flush();
 
         return $this->json([
             'success' => true,
