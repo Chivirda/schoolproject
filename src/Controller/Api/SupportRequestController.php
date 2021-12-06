@@ -165,6 +165,72 @@ class SupportRequestController extends AbstractController
     }
 
     /**
+     * @Route("/edit/{id}", name="api.request.edit")
+     */
+    public function editAction(
+        Request $request,
+        int $id,
+        SupportRequestRepository $supportRequestRepository
+    ): Response {
+        $user = $this->getUserByBearerToken($request);
+
+        if (is_null($user)) {
+            return $this->json([
+                'error'   => true,
+                'message' => 'Пользователь не авторизован',
+            ]);
+        }
+
+        $supportRequest = $supportRequestRepository->findById($id);
+
+        if (is_null($supportRequest)) {
+            return $this->json([
+                'error'   => true,
+                'message' => sprintf('Не найдена заявка с id %s.', $id),
+            ]);
+        }
+
+        if ($supportRequest->getCreatedBy()->getId() !== $user->getId()) {
+            return $this->json([
+                'error'   => true,
+                'message' => 'Удалить заявку может только создатель',
+            ]);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        $requestDto = SupportRequestDTO::createFromEntity($supportRequest);
+
+        $form = $this->createForm(SupportRequestType::class, $requestDto, [
+            'csrf_protection' => false,
+        ]);
+
+        $form->submit($data);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $supportRequest->updateFromDTO($requestDto);
+                $this->entityManager->flush();
+
+                return $this->json([
+                    'success' => true,
+                    'data'    => $supportRequest->getData(),
+                ]);
+            } else {
+                return $this->json([
+                    'error'   => true,
+                    'message' => (string)$form->getErrors(true, false),
+                ]);
+            }
+        }
+
+        return $this->json([
+            'error'   => true,
+            'message' => 'Пустой запрос',
+        ]);
+    }
+
+    /**
      * @Route("/answer/{id}", name="api.request.answer")
      */
     public function answerAction(
@@ -249,7 +315,7 @@ class SupportRequestController extends AbstractController
 
         return $this->json([
             'success' => true,
-            'data'    => $supportRequest->getAnswer() ? $supportRequest->getAnswer()->getData() : null
+            'data'    => $supportRequest->getAnswer() ? $supportRequest->getAnswer()->getData() : null,
         ]);
     }
 

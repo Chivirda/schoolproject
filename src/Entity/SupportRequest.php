@@ -71,7 +71,7 @@ class SupportRequest
         return new self($dto->getCreatedBy(), $dto->getTitle(), $dto->getMessage());
     }
 
-    public function updateFromDTO(SupportRequestDTO $dto): self
+    public function updateFromDTO(SupportRequestDTO $dto): void
     {
         $this->setTitle($dto->getTitle());
         $this->setMessage($dto->getMessage());
