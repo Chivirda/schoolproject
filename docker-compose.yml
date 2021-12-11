@@ -32,3 +32,9 @@ services:
       MYSQL_USER: dev
       MYSQL_PASSWORD: password
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+  mailhog:
+    container_name: vi_school_symfony_mailhog
+    image: mailhog/mailhog:latest
+    ports:
+      - "17025:1025"
+      - "17125:8025"
