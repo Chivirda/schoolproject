@@ -1,6 +1,15 @@
-<h1>Вы успешно зареристрированы</h1>
+{% apply inline_css %}
+    <style>
+        img {
+            height: 100px;
+        }
+    </style>
 
-<p>Ваше имя: {{ name }}</p>
-<p>Ваш логин: {{ login }}</p>
-<hr />
-<p>Для авторизации перейдите по <a href="http://localhost:1780/login">ссылке</a>.</p>
+    <h1>Вы успешно зареристрированы</h1>
+
+    <p>Ваше имя: {{ name }}</p>
+    <p>Ваш логин: {{ login }}</p>
+    <hr />
+    <p>Для авторизации перейдите по <a href="http://localhost:1780/login">ссылке</a>.</p>
+    <img src="{{ email.image('@images/mail.png') }}" alt="Logo">
+{% endapply %}
