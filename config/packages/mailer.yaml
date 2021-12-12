@@ -1,3 +1,7 @@
 framework:
     mailer:
+        envelope:
+            sender: 'Awesome system <no-reply@hotmail.com>'
+        headers:
+            From: 'Awesome system <no-reply@hotmail.com>'
         dsn: '%env(MAILER_DSN)%'

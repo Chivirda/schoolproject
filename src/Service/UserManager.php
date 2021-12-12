@@ -13,15 +13,18 @@ class UserManager
     private UserRepository $userRepository;
     private EntityManagerInterface $entityManager;
     private UserPasswordHasherInterface $passwordHasher;
+    private RegistrationEmailSender $emailSender;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        RegistrationEmailSender $emailSender
     ) {
         $this->entityManager = $entityManager;
         $this->userRepository = $userRepository;
         $this->passwordHasher = $passwordHasher;
+        $this->emailSender = $emailSender;
     }
 
     public function registerUser(UserDto $userDto): void
@@ -40,6 +43,8 @@ class UserManager
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+
+        $this->emailSender->sendSuccessUserRegistration($user);
     }
 
     public function isUserExistByEmail(string $email): bool
