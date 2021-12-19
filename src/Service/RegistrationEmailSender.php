@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Exception\RegistrationMailSendFailedException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -26,7 +27,11 @@ class RegistrationEmailSender
     public function sendSuccessUserRegistration(User $user): void
     {
         $preparedEmail = $this->prepareEmail($user);
-        $this->mailer->send($preparedEmail);
+        try {
+            $this->mailer->send($preparedEmail);
+        } catch (\Throwable $e) {
+            throw new RegistrationMailSendFailedException();
+        }
     }
 
     private function prepareEmail(User $user): TemplatedEmail
